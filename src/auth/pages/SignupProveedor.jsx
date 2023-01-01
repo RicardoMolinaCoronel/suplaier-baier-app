@@ -12,7 +12,10 @@ export const SignupProveedor = () => {
               className="signupPage__centralbox__titleBox__logoBox__logoImg"
             />
           </div>
-          <a className="breadcrumb-link paragraph paragraph--white paragraph--mid">
+          <a
+            href="/"
+            className="breadcrumb-link paragraph paragraph--white paragraph--mid"
+          >
             Registro
           </a>
           <span className="material-symbols-rounded icon-white icon--sm">
