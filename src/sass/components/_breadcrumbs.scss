@@ -1,0 +1,11 @@
+.breadcrumb-link {
+  text-decoration: none;
+
+  &__active {
+    color: $color-green-dark;
+  }
+}
+
+.breadcrumb-link:hover {
+  color: $color-blue;
+}
