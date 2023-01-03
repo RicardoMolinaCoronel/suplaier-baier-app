@@ -24,6 +24,19 @@ export const FormRegistrarProveedor = () => {
   const [esCiudadValido, setEsCiudadValido] = useState(false);
   const [esConfValido, setEsConfValido] = useState(false);
 
+  const regexEmail = /^\w+([-]?\w+)*@\w+([-]?\w+)*(.\w{2,3})+$/;
+  const regexNumero = /^[+]?[(]?[0-9]{3}[)]?[-\s]?[0-9]{3}[-\s]?[0-9]{4,6}$/im;
+  const regexCedula = /^[0-9]{9}[-]?[0-9][-]?([0-9]{3})?$/;
+  const regexContrasena = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
+  const regexNombre =
+    /^[a-zA-ZàáąčćęèéįìíòóùúýźñçÀÁĄĆĘÈÉÌÍÒÓÙÚŲÝŹÑÇ']+[ -][a-zA-ZàáąčćęèéįìíòóùúýźñçÀÁĄĆĘÈÉÌÍÒÓÙÚŲÝŹÑÇ ,.'-]+$/;
+  const regexCiudad =
+    /^[a-zA-ZàáąčćęèéįìíòóùúýźñçÀÁĄĆĘÈÉÌÍÒÓÙÚŲÝŹÑÇ']+([ -][a-zA-ZàáąčćęèéįìíòóùúýźñçÀÁĄĆĘÈÉÌÍÒÓÙÚŲÝŹÑÇ ,.'-]+)?$/;
+  const regexUsername = /^[a-zA-Z0-9_]{3,30}$/;
+
+  const regexNumbers = /^\d{0,10}$/;
+  const regexTMP = /[0-9]/g;
+
   const {
     formState,
     Nombre,
@@ -108,9 +121,21 @@ export const FormRegistrarProveedor = () => {
     setEsConfValido(true);
   }, [ContrasenaConf]);
 
+  const onChangeIdentificacion = (event) => {
+    if (event.target.value.length > 0) {
+      console.log("match:", event.target.value.match(regexTMP));
+      if (!regexNumbers.test(event.target.value)) {
+        const obj = document.getElementById("compradorIdentificacion");
+        let tmp = obj.value.match(regexTMP);
+        if (tmp === null) obj.value = "";
+        else obj.value = tmp.join("");
+      }
+    }
+    onInputChange(event);
+  };
+
   //metodos validaciones
   const checkValidUsername = async () => {
-    const regexUsername = /^[a-zA-Z0-9_]{3,30}$/;
     if (!regexUsername.test(Usuario)) {
       setEsUsuarioValido(false);
       return;
@@ -126,16 +151,6 @@ export const FormRegistrarProveedor = () => {
     //se setean todos los campos validadores
     return new Promise((resolve, reject) => {
       checkValidUsername();
-
-      const regexEmail = /^\w+([-]?\w+)*@\w+([-]?\w+)*(.\w{2,3})+$/;
-      const regexNumero =
-        /^[+]?[(]?[0-9]{3}[)]?[-\s]?[0-9]{3}[-\s]?[0-9]{4,6}$/im;
-      const regexCedula = /^[0-9]{9}[-]?[0-9][-]?([0-9]{3})?$/;
-      const regexContrasena = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
-      const regexNombre =
-        /^[a-zA-ZàáąčćęèéįìíòóùúýźñçÀÁĄĆĘÈÉÌÍÒÓÙÚŲÝŹÑÇ']+[ -][a-zA-ZàáąčćęèéįìíòóùúýźñçÀÁĄĆĘÈÉÌÍÒÓÙÚŲÝŹÑÇ ,.'-]+$/;
-      const regexCiudad =
-        /^[a-zA-ZàáąčćęèéįìíòóùúýźñçÀÁĄĆĘÈÉÌÍÒÓÙÚŲÝŹÑÇ']+([ -][a-zA-ZàáąčćęèéįìíòóùúýźñçÀÁĄĆĘÈÉÌÍÒÓÙÚŲÝŹÑÇ ,.'-]+)?$/;
 
       if (
         esUsuarioValido &&
@@ -398,14 +413,15 @@ export const FormRegistrarProveedor = () => {
                   id="compradorIdentificacion"
                   type="text"
                   placeholder={
-                    tipoIdSelected === "Cédula"
-                      ? "0987650947"
-                      : "0987650947-001"
+                    tipoIdSelected === "Cédula" ? "0987650947" : "0987650947001"
                   }
                   className="formRegistrarComp__input paragraph"
                   name="Identificacion"
+                  // ^[0-9]{9}[-]?[0-9][-]?([0-9]{3})?$
+                  maxLength={tipoIdSelected === "Cédula" ? "10" : "13"}
+                  // "0987650947-001"
                   value={Identificacion}
-                  onChange={onInputChange}
+                  onChange={(event) => onChangeIdentificacion(event)}
                   required
                 />
                 {!esIdentificacionValido && (
