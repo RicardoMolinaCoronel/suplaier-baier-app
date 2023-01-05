@@ -39,8 +39,16 @@ body {
     color: $color-green;
   }
 
+  &--succesfull {
+    color: $color-successfull;
+  }
+
   &--red {
     color: $color-red;
+  }
+
+  &--danger {
+    color: $color-danger;
   }
 
   &--white {

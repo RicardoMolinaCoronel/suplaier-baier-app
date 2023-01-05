@@ -27,7 +27,9 @@ export const FormRegistrarComprador = () => {
   const [esEmailValido, setEsEmailValido] = useState(false);
   const [esCiudadValido, setEsCiudadValido] = useState(false);
   const [esConfValido, setEsConfValido] = useState(false);
+  const [mostrarMensjeUsuario, setMostrarMensajeUsuario] = useState(false);
 
+  const regexUsername = /^[a-zA-Z0-9_]{3,30}$/;
   const {
     formState,
     Nombre,
@@ -82,6 +84,7 @@ export const FormRegistrarComprador = () => {
   };
 
   useEffect(() => {
+    checkValidUsernameTR();
     setEsUsuarioValido(true);
   }, [Usuario]);
 
@@ -113,9 +116,54 @@ export const FormRegistrarComprador = () => {
     setEsConfValido(true);
   }, [ContrasenaConf]);
 
+  function allInvalid(input) {
+    input.classList.remove("is-valid");
+    input.classList.remove("is-invalid");
+  }
+
+  function makeInvalid(input) {
+    input.classList.add("is-invalid");
+    input.classList.remove("is-valid");
+  }
+  function makeValid(input) {
+    input.classList.add("is-valid");
+    input.classList.remove("is-invalid");
+  }
+  function hideMessage(message) {
+    message.classList.add("none");
+  }
+
+  const changeUsernameInputStyle = (isValid) => {
+    let input = document.getElementById("compradorUsuario");
+    if (input.value.length > 2) {
+      if (isValid) {
+        makeValid(input);
+        setMostrarMensajeUsuario(true);
+        setEsUsuarioValido(true);
+      } else {
+        makeInvalid(input);
+        setMostrarMensajeUsuario(false);
+        setEsUsuarioValido(false);
+      }
+    } else {
+      setMostrarMensajeUsuario(false);
+      allInvalid(input);
+      hideMessage(document.getElementById("mensaje-valid"));
+      setEsUsuarioValido(false);
+    }
+  };
+
+  const checkValidUsernameTR = async () => {
+    if (!regexUsername.test(Usuario)) changeUsernameInputStyle(false);
+    const resp = await fetch(`${apiUrl}/validarusuario?username=${Usuario}`);
+    const data = await resp.json();
+    const { rows: result } = !!data && data;
+    if (result.length === 0) return changeUsernameInputStyle(true);
+    else changeUsernameInputStyle(false);
+  };
+
   //metodos validaciones
   const checkValidUsername = async () => {
-    const regexUsername = /^[a-zA-Z0-9_]{3,30}$/;
     if (!regexUsername.test(Usuario)) {
       setEsUsuarioValido(false);
       return;
@@ -133,7 +181,8 @@ export const FormRegistrarComprador = () => {
       checkValidUsername();
 
       const regexEmail = /^\w+([-]?\w+)*@\w+([-]?\w+)*(.\w{2,3})+$/;
-      const regexNumero = /^[+]?[(]?[0-9]{3}[)]?[-\s]?[0-9]{3}[-\s]?[0-9]{4,6}$/im;
+      const regexNumero =
+        /^[+]?[(]?[0-9]{3}[)]?[-\s]?[0-9]{3}[-\s]?[0-9]{4,6}$/im;
       const regexCedula = /^[0-9]{9}[-]?[0-9][-]?([0-9]{3})?$/;
       const regexContrasena = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
       const regexNombre =
@@ -263,6 +312,7 @@ export const FormRegistrarComprador = () => {
                 <div className="formRegistrarComp__boxError">
                   <input
                     id="compradorUsuario"
+                    autoComplete="off"
                     type="text"
                     placeholder="jrodriguez"
                     className="formRegistrarComp__input paragraph"
@@ -272,9 +322,47 @@ export const FormRegistrarComprador = () => {
                     required
                   />
                   {!esUsuarioValido && (
-                    <p className="paragraph--red u-padding-left-small">
-                      Usuario no válido
-                    </p>
+                    <div
+                      id="mensaje-invalid"
+                      className="mensajeUsuarioValido--container invalid"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="red"
+                        className="bi bi-file-excel-fill"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M12 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM5.884 4.68 8 7.219l2.116-2.54a.5.5 0 1 1 .768.641L8.651 8l2.233 2.68a.5.5 0 0 1-.768.64L8 8.781l-2.116 2.54a.5.5 0 0 1-.768-.641L7.349 8 5.116 5.32a.5.5 0 1 1 .768-.64z" />
+                      </svg>
+                      <p className="paragraph--bold paragraph--danger u-padding-left-small">
+                        Usuario no válido
+                      </p>
+                    </div>
+                  )}
+                  {mostrarMensjeUsuario && (
+                    <div
+                      id="mensaje-valid"
+                      className="mensajeUsuarioValido--container valid"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="green"
+                        className="bi bi-bookmark-check-fill"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M2 15.5V2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.74.439L8 13.069l-5.26 2.87A.5.5 0 0 1 2 15.5zm8.854-9.646a.5.5 0 0 0-.708-.708L7.5 7.793 6.354 6.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z"
+                        />
+                      </svg>
+                      <p className="paragraph--bold paragraph--succesfull u-padding-left-small">
+                        Usuario válido
+                      </p>
+                    </div>
                   )}
                 </div>
               </div>

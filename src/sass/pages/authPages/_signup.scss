@@ -1,3 +1,22 @@
+.is-valid {
+  outline: 2px solid $color-successfull;
+}
+.is-valid:focus-visible {
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.5);
+}
+.is-invalid {
+  outline: 2px solid $color-danger;
+}
+.is-invalid:focus-visible {
+  box-shadow: 0 0 0 0.4rem rgba(0, 0, 0, 0.5);
+}
+
+.mensajeUsuarioValido--container {
+  display: flex;
+  flex-direction: row;
+  margin: 0.5rem 0;
+}
+
 .formRegistrarComprador {
   display: flex;
   flex-direction: row;
